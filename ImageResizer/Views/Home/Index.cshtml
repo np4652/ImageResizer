@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+   <p>
+    <input type="file" name="photo" onchange="previewFile(this);" required>
+</p>
+<img id="previewImg" src="/examples/images/transparent.png" alt="Placeholder">
+<p>
+    <input id="btnUploadImage" type="button" value="Submit">
+</p>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#btnUploadImage").click(function () {
+                UploadImage();
+            })
+        });
+
+        function previewFile(input) {
+            var file = $("input[type=file]").get(0).files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    $("#previewImg").attr("src", reader.result);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function UploadImage() {
+            var fileUpload = $("input[type=file]").get(0);
+            var files = fileUpload.files;
+            var fileData = new FormData();
+
+            for (var i = 0; i < files.length; i++) {
+                fileData.append("file", files[i]);
+            }
+
+            $.ajax({
+                url: '/home/ResizeImage',
+                type: "POST",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                success: function (result) {
+                    //alert(result);
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+        }
+
+    </script>
+}
